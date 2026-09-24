@@ -1,0 +1,31 @@
+name: Firmware CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: firmware-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-ultra:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Build toolchain image
+        run: docker build -t chameleon-firmware-builder firmware
+      - name: Build Ultra firmware
+        run: docker run --rm -v "$PWD:/workdir" -e CURRENT_DEVICE_TYPE=ultra chameleon-firmware-builder firmware/build.sh
+      - name: Upload firmware
+        uses: actions/upload-artifact@v4
+        with:
+          name: ultra-firmware
+          path: firmware/objects/*
+          if-no-files-found: error
