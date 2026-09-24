@@ -16,7 +16,7 @@ jobs:
   build-ultra:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - name: Build toolchain image
@@ -24,7 +24,7 @@ jobs:
       - name: Build Ultra firmware
         run: docker run --rm -v "$PWD:/workdir" -e CURRENT_DEVICE_TYPE=ultra chameleon-firmware-builder firmware/build.sh
       - name: Upload firmware
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ultra-firmware
           path: firmware/objects/*
